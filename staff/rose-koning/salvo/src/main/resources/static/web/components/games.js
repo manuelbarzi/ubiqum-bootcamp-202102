@@ -7,7 +7,8 @@ const Games = {
       <ol id="games">
         <div v-for="(game, key) in games">
           <li>
-            {{game.created}}
+            start{{game.created}}
+            <template v-if="game.endDate">end{{game.endDate}}</template>
             <div v-for="(gamePlayer, key) in game.gamePlayers">
             {{gamePlayer.player.username}}
             <router-link v-bind:to="'/game/'+ gamePlayer.id" v-if="gamePlayer.isMine" class="button">return to game</router-link>
@@ -31,6 +32,7 @@ const Games = {
         username: null,
         games: null,
         access: false,
+        polling:null
       }
     },
     created() {
@@ -38,7 +40,8 @@ const Games = {
         if (error) return alert(error)
   
         this.username = username
-  
+
+        this.polling=setInterval(()=>
         getGames((error, games) => {
           if(error) return alert(error)
 
@@ -50,7 +53,7 @@ const Games = {
             })
           })
           this.games = games;
-        })
+        }), 3000)
       })
     },
     methods: {

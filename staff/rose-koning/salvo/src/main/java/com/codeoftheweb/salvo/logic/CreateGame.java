@@ -8,6 +8,7 @@ import com.codeoftheweb.salvo.repositories.GamePlayerRepository;
 import com.codeoftheweb.salvo.repositories.GameRepository;
 import com.codeoftheweb.salvo.repositories.PlayerRepository;
 
+import com.codeoftheweb.salvo.repositories.ScoreRepository;
 import com.codeoftheweb.salvo.utils.ApiUtils;
 import org.springframework.security.core.Authentication;
 

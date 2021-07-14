@@ -3,6 +3,7 @@ package com.codeoftheweb.salvo.logic;
 import com.codeoftheweb.salvo.models.*;
 import com.codeoftheweb.salvo.repositories.GamePlayerRepository;
 import com.codeoftheweb.salvo.repositories.GameRepository;
+import com.codeoftheweb.salvo.repositories.ScoreRepository;
 import org.springframework.security.core.Authentication;
 
 import java.security.AccessControlException;
@@ -13,12 +14,14 @@ import static java.util.stream.Collectors.toList;
 public class GetGameView {
     private GameRepository gameRepository;
     private GamePlayerRepository gamePlayerRepository;
+    private ScoreRepository scoreRepository;
     private Authentication authentication;
     private long gamePlayerId;
 
-    public GetGameView(GameRepository gameRepository, GamePlayerRepository gamePlayerRepository, Authentication authentication, long gamePlayerId) {
+    public GetGameView(GameRepository gameRepository, GamePlayerRepository gamePlayerRepository,ScoreRepository scoreRepository, Authentication authentication, long gamePlayerId) {
         this.gameRepository = gameRepository;
         this.gamePlayerRepository = gamePlayerRepository;
+        this.scoreRepository = scoreRepository;
         this.authentication = authentication;
         this.gamePlayerId = gamePlayerId;
     }
@@ -99,14 +102,21 @@ public class GetGameView {
                     return opppenentShipInfo;
                 }).collect(toList());
                 gameView.put("opponentShips", opponentShipList);
-                if(game.getEndDate() == null) {
-                    boolean gameOver = this.areAllOpponentShipsSunk(opponentShipList);
 
-                    if (gameOver) {
+                boolean gameOver = this.areAllOpponentShipsSunk(opponentShipList);
+
+                if (gameOver) {
+                    if (game.getEndDate() == null) {
                         game.setEndDate(new Date());
-                        gameView.put("winner", gamePlayer.get().getPlayer().getUsername());
+
+                        Score score = new Score(game,gamePlayer.get().getPlayer(), 2);
+                        Score score1 = new Score(game, opponent.getPlayer(), 0);
+                        scoreRepository.save(score);
+                        scoreRepository.save(score1);
                         gameRepository.save(game);
                     }
+                    gameView.put("winner", gamePlayer.get().getPlayer().getUsername());
+
                 }
             }
 
@@ -127,20 +137,23 @@ public class GetGameView {
                     }
                 });
             });
-            if (game.getEndDate() == null) {
 
-                // TODO check whether all my ships (or the opponent's) are already sunk (if yes, then mark game as over)
-                boolean gameOver = this.areAllShipsSunk(shipList);
-
-                if (gameOver) {
+            boolean gameOver = this.areAllShipsSunk(shipList);
+            if (gameOver) {
+                if (game.getEndDate() == null) {
                     game.setEndDate(new Date());
-                    gameView.put("winner", opponent.getPlayer().getUsername());
+                    Score score = new Score(game,gamePlayer.get().getPlayer(), 2);
+                    Score score1 = new Score(game, opponent.getPlayer(), 0);
+                    scoreRepository.save(score);
+                    scoreRepository.save(score1);
                     gameRepository.save(game);
                 }
+                gameView.put("winner", opponent.getPlayer().getUsername());
             }
 
             if (game.getEndDate() != null) {
                 gameView.put("endDate", game.getEndDate());
+
             }
             gameView.put("missedShots", opponentSalvoes);
 
@@ -171,29 +184,27 @@ public class GetGameView {
 
     private boolean areAllOpponentShipsSunk(List<Map<String, Object>> opponentShipList) {
         List<Object> count = new ArrayList<>();
-        opponentShipList.forEach(ship->{
-            if(ship.containsKey("type")){
+        opponentShipList.forEach(ship -> {
+            if (ship.containsKey("type")) {
                 count.add(ship.get("type"));
             }
         });
-        if (count.size()==5){
+        if (count.size() == 5) {
             return true;
-        }
-        else
+        } else
             return false;
     }
 
     private boolean areAllShipsSunk(List<Map<String, Object>> shipList) {
         List<Object> count = new ArrayList<>();
-        shipList.forEach(ship->{
-            if(ship.containsKey("sunk")){
+        shipList.forEach(ship -> {
+            if (ship.containsKey("sunk")) {
                 count.add(ship.get("sunk"));
             }
         });
-        if (count.size()==5){
+        if (count.size() == 5) {
             return true;
-        }
-        else
-        return false;
+        } else
+            return false;
     }
 }

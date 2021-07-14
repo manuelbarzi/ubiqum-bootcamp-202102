@@ -21,7 +21,9 @@ public class RetrieveGames {
 
             gameMap.put("id", game.getId());
             gameMap.put("created", game.getCreation());
-
+            if(game.getEndDate()!=null){
+                gameMap.put("endDate", game.getEndDate());
+            }
             List<Map<String, Object>> gamePlayersList = new ArrayList<>();
 
             Set<GamePlayer> gamePlayers = game.getGamePlayers();

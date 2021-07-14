@@ -35,7 +35,7 @@ function selectCellsForShip(selectedCells, selectedShip, selectedCell) {
     var firstCell = cells[0];
     var cellLength = cells.length - 1;
     var lastCell = cells[cellLength];
-    var rowToNumber = "ABCDEFGHIJ";
+    var rowToNumber = ["A","B","C","D","E","F","G","H","I","J"];
 
     if (selectedCell < firstCell) {
         //before
@@ -74,11 +74,6 @@ function selectCellsForShip(selectedCells, selectedShip, selectedCell) {
     if (selectedCell > firstCell) {
         //after
 
-        if (lastCell === firstCell) {
-            cells.push(selectedCell);
-            cells.sort();
-            return selectedCells;
-        }
         var xFirst = firstCell[0];//letter
         var yFirst = firstCell[1];//number
 
@@ -101,11 +96,15 @@ function selectCellsForShip(selectedCells, selectedShip, selectedCell) {
 
         if (yFirst === yLast) {
             if (ySelected === yLast) {
-                var nextLetter = rowToNumber.substring(rowToNumber.indexOf(xSelected), rowToNumber.indexOf(xSelected) + 1);
+                var indexLast = (rowToNumber.indexOf(xLast))+1;
+                var nextLetter = rowToNumber[indexLast];
                 if (nextLetter === xSelected) {
                     cells.push(selectedCell);
                     cells.sort();
                     return selectedCells;
+                }
+                else {
+                    throw Error("not a valid input cell");
                 }
             }
         }

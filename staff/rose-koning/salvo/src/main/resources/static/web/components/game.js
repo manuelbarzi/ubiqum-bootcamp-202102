@@ -89,6 +89,7 @@ const Game = {
 
     <div v-if="isGameOver()">
       <h1> GAME OVER </h1>
+      <h2>{{winner}} is the winner</h2>
     </div>
   
     </div>
@@ -227,7 +228,7 @@ const Game = {
     },
     setError(error) {
       this.error = error
-      setTimeout((this.error = ""), 10000);
+      setTimeout(()=>{this.error = ""}, 3000);
     },
     maxLength(ship, size) {
       selectedShip = this.selectedShipCells[ship];
@@ -275,7 +276,6 @@ const Game = {
       var salvoes = { "turnTracker": this.turnTracker, "location": this.selectedSalvoCells }
       try {
         setSalvoes(this.turnType, this.$route.params.gamePlayerId, salvoes, () => {
-          this.fetchData();
           this.salvoSize=0;
         })
       } catch (error) {
