@@ -3,6 +3,7 @@ import logo from './MYtineraryLogo.png';
 import startBrowsing from './start-browsing.png'
 import homeIcon from './homeIcon.png'
 import './styles.css'
+import 'bootstrap/dist/css/bootstrap.css';
 
 export default function Landing() {
 
@@ -21,7 +22,7 @@ export default function Landing() {
                     <p style={{ textAlign: 'center', padding: '30px' }}>Want to build your own MYtinerary?</p>
                     <div style={{ textAlign: 'center' }}>
                         <Link to='/login'><span className='mr-5' style={{ textAlign: 'left' }}>Log In</span></Link>
-                        <Link to='/register'><span className='mr-7' style={{ textAlign: 'right' }}>Create Account</span></Link>
+                        <Link to='/createAccount'><span className='mr-7' style={{ textAlign: 'right' }}>Create Account</span></Link>
                     </div>
                     <div>
                         <img className='homeI' src={homeIcon} alt="HomeIcon" />

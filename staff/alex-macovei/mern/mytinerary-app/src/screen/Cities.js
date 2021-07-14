@@ -1,54 +1,72 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import Button from 'react-bootstrap/Button';
 import homeIcon from './homeIcon.png';
-import retrieveAllCities from '../logic/retrieve-all-cities'
+import { retrieveCities } from "../store/actions/cityActions";
+import { retrieveItineraries } from "../store/actions/itineraryActions"
 
+const mapStateToProps = (state) => ({
+    cities: state.cities.cities,
+    error: state.cities.error,
+})
 
-export default class Cities extends Component {
+const mapDispatchToProps = (dispatch) => {
+    return {
+        retrieveItinerary: (city) => dispatch(retrieveItineraries(city)),
+        retrieveCities: () => dispatch(retrieveCities())
+    }
+}
 
+class Cities extends Component {
     constructor() {
         super();
+
         this.state = {
-            cityFilter: '',
             loading: true,
-            myCities: [],
+            filteredCities: [],
         }
     }
+
 
     // TODO RTFM Promises
-    // TODO RTFM aync await
+    // TODO RTFM async await
 
-    async componentDidMount() {
-        try {
-            const cities = await retrieveAllCities()
-
-            this.setState({ myCities: cities, filteredCities: cities, loading: false, })
-        } catch (error) {
-            this.setState({ myCities: [], filteredCities: [], loading: false, })
-        }
+    componentWillMount() {
+        this.props.retrieveCities()
     }
 
-    handleChange(event) {
+    async componentDidMount() {
+        this.setState({ loading: false })
+    }
+
+    componentWillReceiveProps(props) {
+        const { cities } = props
+
         this.setState({
-            cityFilter: event.target.value
+            cities,
+            filteredCities: cities
         })
     }
 
-    render() {
-        let filteredCities = this.state.myCities.filter(
-            (city) => {
-                //return city.name.substring(0,this.state.cityFilter.length).toLowerCase().indexOf(this.state.cityFilter.toLowerCase()) !== -1
-                return city.name.toLowerCase().startsWith(this.state.cityFilter.toLowerCase())
-            }
-        );
+    handleFilterChange(event) {
+        const filteredCities = this.state.cities.filter((city) => city.name.toLowerCase().startsWith(event.target.value.toLowerCase()));
 
-        if (this.state.loading) {
+        this.setState({ filteredCities })
+    }
+
+    handleClick = (city) => {
+        this.props.retrieveItinerary(city)
+    }
+
+    render() {
+        const { state: { filteredCities, loading }, props: { error } } = this
+
+        if (loading) {
             return <div><h1 style={{ textAlign: "center" }}>...Page is loading...</h1></div>
         }
-        if (!this.state.myCities.length) {
+        if (error) {
             return (
-                <div><h1 style={{ color: "red", textAlign: "center" }}>...An error has occurred while trying to load the data...</h1>
+                <div><h1 style={{ color: "red", textAlign: "center" }}>{error}</h1>
                     <div>
                         <Link to='/'><img className='homeI' src={homeIcon} alt="HomeIcon" /></Link>
                     </div>
@@ -64,7 +82,7 @@ export default class Cities extends Component {
                         <label htmlFor="filter">Filter by City: </label>
                         <input type="text" id="filter"
                             value={this.state.cityFilter}
-                            onChange={this.handleChange.bind(this)}
+                            onChange={this.handleFilterChange.bind(this)}
                             placeholder="Search city..."
                         />
 
@@ -72,7 +90,9 @@ export default class Cities extends Component {
                     <div>
                         {filteredCities.map(city => (
                             <div>
-                                <div>{city.name}</div>
+                                <button onClick={this.handleClick(city.name)}>
+                                    {city.name}
+                                </button>
                             </div>
                         ))}
                     </div>
@@ -84,3 +104,5 @@ export default class Cities extends Component {
         )
     }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Cities)
