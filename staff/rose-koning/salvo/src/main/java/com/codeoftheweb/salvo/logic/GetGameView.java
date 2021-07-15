@@ -115,7 +115,6 @@ public class GetGameView {
                         scoreRepository.save(score1);
                         gameRepository.save(game);
                     }
-                    gameView.put("winner", gamePlayer.get().getPlayer().getUsername());
 
                 }
             }
@@ -148,7 +147,6 @@ public class GetGameView {
                     scoreRepository.save(score1);
                     gameRepository.save(game);
                 }
-                gameView.put("winner", opponent.getPlayer().getUsername());
             }
 
             if (game.getEndDate() != null) {
