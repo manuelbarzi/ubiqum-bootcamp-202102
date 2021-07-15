@@ -87,9 +87,11 @@ const Game = {
       </div>
     </div>
 
-    <div v-if="isGameOver()">
+    <div v-if="isGameOver()" class="info-box">
       <h1> GAME OVER </h1>
-      <h2>{{winner}} is the winner</h2>
+      <h2 v-if="isWinner()"> You won the game!</h2>
+      <h2 v-else> You lost the game!</h2>
+      <p>You scored {{score}} points</p>
     </div>
   
     </div>
@@ -132,7 +134,8 @@ const Game = {
       missedShots: {},
       polling: null,
       gameStarted:false,
-      winner: ""
+      winner: "",
+      score: null
     }
   },
   created() {
@@ -170,7 +173,8 @@ const Game = {
           this.turnTracker = game.turn;
           this.endDate = game.endDate;
           this.opponentShips = game.opponentShips;
-          this.winner = game.winner
+          this.winner = game.winner;
+          this.score = game.score;
         }), 3000)
 
     },
@@ -292,8 +296,14 @@ const Game = {
     },
     isSalvoHit(cell){
       return isSalvoAHit(cell, this.opponentShips)
+    }, isWinner(){
+      return isPlayerWinner(this.score)
     }
 
+  },
+  beforeDestroy(){
+    this.polling=null;
   }
+ 
 
 }

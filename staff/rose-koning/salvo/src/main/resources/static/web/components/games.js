@@ -79,5 +79,8 @@ const Games = {
         })
       },
   
+    },
+    beforeDestroy(){
+      this.polling=null;
     }
   };

@@ -142,8 +142,8 @@ public class GetGameView {
             if (gameOver) {
                 if (game.getEndDate() == null) {
                     game.setEndDate(new Date());
-                    Score score = new Score(game,gamePlayer.get().getPlayer(), 2);
-                    Score score1 = new Score(game, opponent.getPlayer(), 0);
+                    Score score = new Score(game,gamePlayer.get().getPlayer(), 0);
+                    Score score1 = new Score(game, opponent.getPlayer(), 2);
                     scoreRepository.save(score);
                     scoreRepository.save(score1);
                     gameRepository.save(game);
